@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Angka Luar Angkasa!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Desain Umum */
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg, #1a0033 0%, #000000 100%); /* Gradien luar angkasa gelap */
+            color: #E0E0E0;
+            text-align: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Fredoka One', cursive; /* Font playful untuk judul */
+            color: #FFD700; /* Warna emas cerah */
+            text-shadow: 3px 3px 0px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto 20px auto;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 0;
+            position: relative;
+            z-index: 2; /* Pastikan konten di atas bintang */
+        }
+
+        /* Latar Belakang Bintang */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none; /* Agar tidak menghalangi interaksi */
+        }
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 5s infinite ease-in-out alternate;
+        }
+        @keyframes twinkle {
+            0% { opacity: 0.5; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        /* Header - Maskot & Judul */
+        header {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px 0;
+            border-bottom: 2px solid #FFD700;
+            position: relative;
+            overflow: hidden; /* Untuk efek roket */
+        }
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .maskot {
+            width: 150px;
+            height: 150px;
+            background-color: #FF69B4; /* Warna pink cerah untuk maskot */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            border: 5px solid #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+            margin-bottom: 20px;
+            animation: pulse 2s infinite alternate;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+        .maskot span {
+            animation: bounce 1s infinite alternate;
+            display: inline-block;
+        }
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-10px); }
+        }
+        h1 {
+            font-size: 3.5em;
+            line-height: 1.1;
+            margin: 0;
+            color: #FFD700;
+        }
+        .sub-headline {
+            font-size: 1.5em;
+            color: #ADD8E6; /* Biru muda */
+            margin-top: 10px;
+        }
+
+        /* Roket Terbang */
+        .rocket {
+            position: absolute;
+            bottom: -50px; /* Mulai dari luar */
+            left: 10%; /* Posisi awal */
+            width: 80px;
+            height: 150px;
+            background-color: #FF0000; /* Merah terang */
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            transform: rotate(-45deg); /* Arah terbang */
+            animation: flyRocket 10s linear infinite;
+        }
+        @keyframes flyRocket {
+            0% { bottom: -50px; left: 10%; opacity: 0; }
+            10% { opacity: 1; }
+            80% { bottom: 120%; left: 90%; }
+            100% { bottom: 120%; left: 90%; opacity: 0; }
+        }
+
+        /* Bagian CTA Utama */
+        .hero-cta {
+            padding: 60px 0;
+            background: rgba(255, 255, 255, 0.08);
+            margin-top: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+            position: relative;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #00FF00; /* Hijau cerah */
+            color: #1a0033;
+            padding: 20px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-family: 'Fredoka One', cursive;
+            font-size: 2em;
+            margin-top: 30px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 8px 0px #00B300, 0 0 20px rgba(0, 255, 0, 0.7);
+        }
+        .cta-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 12px 0px #00B300, 0 0 30px rgba(0, 255, 0, 1);
+        }
+        .cta-message {
+            font-size: 1.3em;
+            color: #FFF;
+            margin-bottom: 20px;
+        }
+
+        /* Bagian Fitur / Cara Main */
+        .features-section {
+            padding: 80px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px;
+        }
+        .feature-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 30px;
+            width: 300px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #ADD8E6;
+        }
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+        }
+        .feature-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            color: #ADD8E6; /* Biru muda */
+        }
+        .feature-title {
+            font-size: 1.8em;
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+        .feature-card p {
+            font-size: 1em;
+            color: #E0E0E0;
+            margin: 0;
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 50px;
+            height: 50px;
+            background: #ADD8E6;
+            border-radius: 50%;
+            opacity: 0.2;
+        }
+
+        /* Bagian Galeri Screenshot / Ilustrasi */
+        .gallery-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 60px 0;
+            margin-top: 40px;
+        }
+        .gallery-section h2 {
+            margin-bottom: 40px;
+            font-size: 2.5em;
+        }
+        .gallery-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+        }
+        .gallery-item {
+            width: 300px;
+            height: 200px;
+            background-color: #333; /* Placeholder untuk gambar */
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 3px solid #FFD700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFF;
+            font-size: 1.2em;
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        /* Tambahkan gambar placeholder ini di bagian galeri */
+        .placeholder-image {
+            background-color: #3f0f7f;
+            border: 3px dashed #FFD700;
+            font-size: 1.5em;
+            padding: 20px;
+        }
+
+        /* Footer */
+        footer {
+            background: #000;
+            color: #999;
+            padding: 30px 0;
+            margin-top: 50px;
+            border-top: 1px solid #333;
+            font-size: 0.9em;
+        }
+
+        /* Responsif */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5em; }
+            .sub-headline { font-size: 1.2em; }
+            .cta-button { font-size: 1.5em; padding: 15px 30px; }
+            .feature-card { width: 80%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="star-background"></div>
+
+    <header>
+        <div class="container header-content">
+            <div class="maskot" role="img" aria-label="Maskot Alien Lucu">👽<span>🚀</span></div>
+            <h1>Hai, Pejuang Angka Luar Angkasa!</h1>
+            <p class="sub-headline">Siap Bantu <b>Alien Matematika</b> Menjelajahi Galaxy Bilangan?</p><br>
+			               Hanya Kamu Yang Bisa Bantu Alien Masuk Ke ANGKASA 
+            <div class="rocket"></div> </div>
+    </header>
+
+
+        <section class="gallery-section">
+		
+    <h2>Lihat Kesenangan di Galaxy Angka!</h2>
+
+    <div class="gallery-grid">
+<div class="feature-card">
+        <a href="kuis-perkalian.html" class="gallery-item">
+            <img src="img/1.png" alt="Perkalian">
+        </a>
+</div>
+<div class="feature-card">
+        <a href="kuis-penjumlahan.html" class="gallery-item">
+            <img src="img/2.png" alt="Penjumlahan">
+        </a>
+</div>
+<div class="feature-card">
+        <a href="kuis-pengurangan.html" class="gallery-item">
+            <img src="img/3.png" alt="Pengurangan">
+        </a>
+</div>
+<div class="feature-card">
+        <a href="kuis-pembagian.html" class="gallery-item">
+            <img src="img/4.png" alt="pembagian">
+        </a>
+</div>
+    </div>
+</section>
+<section class="features-section">
+            <h2 style="width: 100%;">Kenapa Kamu Pasti Suka Misi Ini?</h2>
+            <div class="feature-card">
+                <div class="feature-icon">✨</div>
+                <h3 class="feature-title">Game Super Seru!</h3>
+                <p>Belajar matematika sambil main game yang penuh kejutan dan tantangan dari planet-planet asing!</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🏆</div>
+                <h3 class="feature-title">Hadiah Keren!</h3>
+                <p>Kumpulkan bintang, mahkota galaksi, dan buka kapal luar angkasa baru setiap kali kamu berhasil!</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">😊</div>
+                <h3 class="feature-title">Jadi Makin Pintar!</h3>
+                <p>Tanpa terasa, kamu bakal jadi jagoan penjumlahan, pengurangan, dan angka-angka lainnya!</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; Hamami-2025 Petualangan Angka Luar Angkasa. Dibuat dengan Cinta untuk Siswa SD Negeri 1 Tirtayasa</p>
+    </footer>
+
+    <script>
+        // Fungsi untuk membuat bintang di latar belakang
+        function createStars() {
+            const starBackground = document.getElementById('star-background');
+            const numStars = 100; // Jumlah bintang
+            for (let i = 0; i < numStars; i++) {
+                let star = document.createElement('div');
+                star.className = 'star';
+                star.style.width = Math.random() * 3 + 1 + 'px'; // Ukuran bintang
+                star.style.height = star.style.width;
+                star.style.top = Math.random() * 100 + '%';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 5 + 's';
+                starBackground.appendChild(star);
+            }
+        }
+        createStars();
+
+        // Fungsi untuk memutar suara saat tombol "Mulai" diklik
+        function playStartSound() {
+            const startSound = document.getElementById('start-sound');
+            if (startSound) {
+                startSound.play().catch(e => console.log("Gagal memutar suara:", e));
+            }
+        }
+    </script>
+</body>
+</html>

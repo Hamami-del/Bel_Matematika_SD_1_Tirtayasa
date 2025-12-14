@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Misi Angka: Selamatkan Planet!</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+    font-family: 'Open Sans', sans-serif;
+    margin: 0;
+    background: radial-gradient(circle at center, #2c0b4e 0%, #000000 100%);
+    color: #E0E0E0;
+    text-align: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 40px;
+}
+
+h2, h3 {
+    font-family: 'Fredoka One', cursive;
+    color: #00FFFF;
+}
+
+.score-board {
+    font-size: 1.2em;
+    color: #00FFFF;
+    background: rgba(0,0,0,.5);
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 2px solid #00FFFF;
+    margin-bottom: 20px;
+}
+
+.game-container {
+    background: rgba(255,255,255,.1);
+    border-radius: 20px;
+    padding: 30px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 0 30px rgba(0,255,255,.4);
+}
+
+.question-box {
+    font-size: 3em;
+    color: #FFD700;
+    margin: 25px 0;
+    padding: 15px;
+    border: 5px dashed #FF69B4;
+    border-radius: 12px;
+}
+
+.choices {
+    display: flex;
+    justify-content: space-around;
+    gap: 15px;
+}
+
+.choice-button {
+    background: #4CAF50;
+    color: #fff;
+    padding: 15px 25px;
+    border-radius: 12px;
+    font-size: 1.5em;
+    font-family: 'Fredoka One';
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #388E3C;
+}
+
+.choice-button:active {
+    transform: translateY(3px);
+    box-shadow: 0 2px 0 #388E3C;
+}
+
+.status-area {
+    margin-top: 20px;
+}
+
+.maskot-feedback {
+    font-size: 4em;
+    animation: bounce .6s infinite alternate;
+}
+
+@keyframes bounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-6px); }
+}
+
+.rocket-tracker {
+    position: fixed; /* Memastikan roket tetap di tempatnya saat di-scroll */
+    right: 50px; /* Jarak dari tepi kanan layar */
+    top: 250px; /* Posisikan vertikal di samping area kuis */
+    width: 120px; /* Ukuran roket agar terlihat proporsional di samping kuis */
+    z-index: 10;
+    pointer-events: none; /* PENTING: Agar klik bisa "tembus" ke tombol kuis di bawahnya */
+    transition: transform .7s cubic-bezier(.34,1.56,.64,1);
+}
+
+.rocket-tracker img {
+    /* Styling gambar roket, dipindahkan dari .rocket-tracker sebelumnya */
+    width: 100%;
+    transform: rotate(-25deg);
+    filter: drop-shadow(0 0 10px #ffb6c1);
+}
+
+/* API ROKET */
+.flame {
+    position: absolute;
+    bottom: -18px;
+    left: 50%;
+    width: 18px;
+    height: 30px;
+    background: radial-gradient(circle, #fff 0%, #ff0 30%, #ff4500 70%);
+    transform: translateX(-50%);
+    border-radius: 50%;
+    opacity: 0;
+}
+.flame.active {
+    animation: flame .3s infinite alternate;
+    opacity: 1;
+}
+@keyframes flame {
+    from { height: 26px; }
+    to { height: 34px; }
+}
+
+/* ANIMASI ANGKA JAWABAN */
+@keyframes pop {
+    0% { transform: scale(0.5); opacity: 0; }
+    80% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); }
+}
+
+audio { display: none; }
+</style>
+</head>
+
+<body>
+
+<div class="score-board">
+Level: <span id="level">1</span> | Skor: <span id="score">0</span>
+</div>
+
+<div class="game-container">
+<h2>BANTU ALIEN ZORP! 👾</h2>
+<h3>Pilih Jawaban yang Benar!</h3>
+
+<div class="question-box">
+    <span id="question-left"></span> = 
+    <span id="question-right">?</span>
+</div>
+
+<div class="choices" id="choices-container"></div>
+
+<div class="status-area">
+<span class="maskot-feedback" id="feedback-emoji">❓</span>
+<p id="feedback-text">Zorp butuh bantuanmu!</p>
+</div>
+</div>
+
+<div class="rocket-tracker" id="rocket-tracker">
+    <img src="roket.gif">
+    <div class="flame" id="flame"></div>
+</div>
+
+<audio id="correct-sound" src="correct.mp3"></audio>
+<audio id="wrong-sound" src="wrong.mp3"></audio>
+<audio id="level-sound" src="level_up_ship.mp3"></audio>
+<audio id="bg-music" src="space.mp3" loop></audio>
+
+<script>
+const questionLeft = document.getElementById('question-left');
+const questionRight = document.getElementById('question-right');
+const choicesContainer = document.getElementById('choices-container');
+const feedbackEmoji = document.getElementById('feedback-emoji');
+const feedbackText = document.getElementById('feedback-text');
+const scoreEl = document.getElementById('score');
+const levelEl = document.getElementById('level');
+const rocket = document.getElementById('rocket-tracker');
+const flame = document.getElementById('flame');
+
+const correctSound = document.getElementById('correct-sound');
+const wrongSound = document.getElementById('wrong-sound');
+const levelSound = document.getElementById('level-sound');
+const bgMusic = document.getElementById('bg-music');
+
+let score = 0;
+let level = 1;
+let correctAnswer = 0;
+let answered = 0;
+
+let rocketStep = 0;
+const MAX_STEP = 6;
+let musicStarted = false;
+
+function startMusic(){
+    if(!musicStarted){
+        bgMusic.volume = 0.4;
+        bgMusic.play().catch(()=>{});
+        musicStarted = true;
+    }
+}
+
+function updateRocket(){
+    rocketStep = Math.max(0, Math.min(MAX_STEP, rocketStep));
+    rocket.style.transform = `translateY(-${rocketStep * 18}px)`;
+}
+
+function flameOn(){
+    flame.classList.add('active');
+    setTimeout(()=>flame.classList.remove('active'),400);
+}
+
+function play(sound){
+    sound.currentTime = 0;
+    sound.play().catch(()=>{});
+}
+
+function newQuestion(){
+    // Logika BARU untuk Pengurangan yang memastikan:
+    // 1. Bilangan yang dikurangi (b) TIDAK 0.
+    // 2. Hasil (correctAnswer) TIDAK 0.
+
+    // 1. Tentukan hasil (c) dan pastikan c >= 1
+    // Batasi hasil maksimal 9
+    const c = Math.floor(Math.random()*9) + 1; 
+
+    // 2. Tentukan bilangan pengurang (b) dan pastikan b >= 1
+    // Batasi pengurang maksimal 9
+    const b = Math.floor(Math.random()*9) + 1; 
+
+    // 3. Hitung bilangan pertama (a) sebagai penjumlahan dari b dan c
+    const a = c + b; 
+    
+    // Opsional: Untuk menjaga angka tidak terlalu besar (maksimal 18)
+    if (a > 15) { 
+        return newQuestion(); // Ulangi jika angka terlalu besar
+    }
+
+    correctAnswer = c; // Jawaban yang benar adalah hasil (c)
+
+    // Tampilan soal: a - b = ?
+    questionLeft.textContent = `${a} - ${b}`; 
+    questionRight.textContent = '?';
+    questionRight.style.color = '#FFD700';
+    questionRight.style.animation = '';
+    
+    choicesContainer.innerHTML = '';
+    let answers = new Set([correctAnswer]);
+    
+    // Generate pilihan jawaban acak
+    while(answers.size < 4){
+        // Pilihan jawaban acak antara 1 dan 9
+        let wrongAnswer = Math.floor(Math.random()*9) + 1; 
+        answers.add(wrongAnswer);
+    }
+    
+    [...answers].sort(()=>Math.random()-0.5).forEach(val=>{
+        const btn = document.createElement('button');
+        btn.className = 'choice-button';
+        btn.textContent = val;
+        btn.onclick = ()=>check(val);
+        choicesContainer.appendChild(btn);
+    });
+}
+function check(val){
+    startMusic();
+    if(val === correctAnswer){
+        score += 10;
+        answered++;
+        scoreEl.textContent = score;
+        feedbackEmoji.textContent = '🥳';
+        feedbackText.textContent = 'KAMU HEBAT!';
+
+        questionRight.textContent = correctAnswer;
+        questionRight.style.color = '#00FFAA';
+        questionRight.style.animation = 'pop 0.4s ease';
+
+        play(correctSound);
+        rocketStep++;
+        updateRocket();
+        flameOn();
+
+        if(answered >= 5){
+            level++;
+            answered = 0;
+            levelEl.textContent = level;
+            play(levelSound);
+        }
+        setTimeout(newQuestion, 1000);
+    } else {
+        feedbackEmoji.textContent = '😥';
+        feedbackText.textContent = 'SEDIKIT LAGI!';
+        play(wrongSound);
+        rocketStep -= 0.5;
+        updateRocket();
+    }
+}
+
+newQuestion();
+updateRocket();
+</script>
+
+</body>
+</html>
